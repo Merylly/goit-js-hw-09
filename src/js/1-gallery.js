@@ -1,3 +1,7 @@
+// Описаний в документації
+import SimpleLightbox from 'simplelightbox';
+// Додатковий імпорт стилів
+import 'simplelightbox/dist/simple-lightbox.min.css';
 const images = [
   {
     preview:
@@ -64,56 +68,22 @@ const images = [
   },
 ];
 
-const galleryList = document.querySelector('.gallery');
-
-const galleryItem = images
-  .map(({ preview, original, description }) => {
-    return `<li class="gallery-item">
-  <a class="gallery-link" href="${original}">
-    <img
-      class="gallery-image"
-      src="${preview}"
-      data-source="${original}"
-      alt="${description}"
-    />
-  </a>
-</li>`;
-  })
-  .join('');
-
-galleryList.innerHTML = galleryItem;
-
-galleryList.addEventListener('click', handleGalleryClick);
-
-function handleGalleryClick(event) {
-  event.preventDefault();
-  if (event.target === event.currentTarget) {
-    return;
-  }
-
-  const instance = basicLightbox.create(
-    `<div class="modal">
-    <img
-      class="gallery-image"
-      src="${event.target.dataset.source}"
-      alt="${event.target.getAttribute('alt')}"
-    />
-  </div>`,
-    {
-      onShow: () => {
-        document.addEventListener('keydown', closeModal);
-      },
-      onClose: () => {
-        document.removeEventListener('keydown', closeModal);
-      },
-    }
-  );
-
-  instance.show();
-
-  function closeModal(event) {
-    if (event.code === 'Escape') {
-      instance.close();
-    }
-  }
-}
+const createGalleryImage = ({ preview, original, description }) => `
+  <li class="gallery-item">
+    <a class="gallery-link" href="${original}">
+      <img
+        class="gallery-image"
+        src="${preview}"
+       alt="${description}"
+      />
+    </a>
+  </li>
+`;
+const gallImg = images.map(createGalleryImage).join('');
+const gallery = document.querySelector('.gallery');
+gallery.insertAdjacentHTML('beforeend', gallImg);
+let lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionPosition: 'bottom',
+  captionDelay: 250,
+});
